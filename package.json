@@ -1,0 +1,13 @@
+{
+  "name": "csgo-server-monitor",
+  "version": "0.0.1",
+  "description": "node application for live monitoring of a source gold csgo server through rcon protocol",
+  "dependencies": {
+	"express" : "latest"
+	,"socket.io" : "latest"
+  	 },
+  "author": "EB",
+  "scripts": {
+    "start": "node index"
+  }
+}

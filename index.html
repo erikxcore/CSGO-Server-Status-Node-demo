@@ -1,0 +1,252 @@
+<!doctype html>
+
+<html>
+  <head>
+	<title>CSGO Server Monitor Node Exampel</title>
+<style>
+body {
+background: url(http://media.steampowered.com/apps/csgo/blog/images/cs_bg.jpg) top center no-repeat #010713;
+color: #999b9d;
+font-family: Calibri, Candara, Segoe, Geneva, Tahoma, Arial, sans-serif;
+font-size: 16px;
+}
+
+.buttons{
+width:100%;
+float:left;
+}
+
+.commands{
+clear:both;
+width:100%;
+}
+
+.extraCommands{
+clear:both;
+width:100%;
+display:none;
+}
+
+.newServerInfo{
+display:none;
+clear:both;
+width:100%;
+}
+
+#container {
+width: 80%;
+margin-top:5%;
+margin-left: auto;
+margin-right: auto;
+position: relative;
+}
+
+a {
+color: #97b7d1;
+text-decoration: none;
+}
+
+h2 a{
+color: #97b7d1;
+font-size: 32px;
+}
+
+
+h2{
+margin: 0 0 5px 0;
+font-size: 32px;
+color: #97b7d1;
+}
+
+#content_container {
+overflow: hidden;
+position: relative;
+background: #15222B;
+border: 4px solid #171b1e;
+margin:0 auto;
+padding:5%;
+width:90%;
+}
+
+.pullLeft{
+float:left;
+}
+
+.pullRight{
+float:right;
+}
+</style>
+<script src="http://66.150.214.52:8000/socket.io/socket.io.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script>
+$( document ).ready(function() {
+  var socket = io();
+  var extraAllowed = false;
+  socket.emit('default server');
+  $('.serverIP').html('66.150.214.52:27017');
+
+  $(document).on("click","#getNewServer", function(){  
+   $(".commands").fadeOut("fast", function(){     
+      $(".newServerInfo").fadeIn();
+   });
+  return false;  
+  });
+
+  $(document).on("click","#connectServer", function(){
+   if($("#serverIP").val() != "" && $("#serverPort").val() != "" && $("#serverRcon").val()  != ""){
+   var data = {
+    ip: $("#serverIP").val(),
+    port: $("#serverPort").val(),
+    rcon: $("#serverRcon").val()
+   } 
+   socket.emit('new server',data);
+   //extraAllowed = true;
+   $('.serverIP').html($("#serverIP").val() + ':' + $("#serverPort").val());
+   $(".newServerInfo").fadeOut('fast',function(){
+   $("#serverIP").val('');
+   $("#serverPort").val('');
+   $("#serverRcon").val('');
+   $(".commands").fadeIn("fast", function(){
+   //$(".extraCommands").fadeIn(); 
+   });
+ });
+ }else{
+ alert("Please ensure all fields are filled in.");
+ }
+ return false;
+ });
+
+  socket.on('error', function(msg){
+    $('#serverResponse').html(msg);
+  });
+  socket.on('status', function(msg){
+    $('#serverResponse').html(msg);
+  });
+  socket.on('timeleft', function(msg){
+    $('#serverResponse').html(msg);
+  });
+  socket.on('banned', function(msg){
+    $('#serverResponse').html(msg);
+  });
+  socket.on('mplugins', function(msg){
+    $('#serverResponse').html(msg);
+  });
+  socket.on('smversion', function(msg){
+    $('#serverResponse').html(msg);
+  });
+  socket.on('mversion', function(msg){
+    $('#serverResponse').html(msg);
+  });
+  socket.on('smplugins', function(msg){
+    $('#serverResponse').html(msg);
+  });
+  socket.on('maps', function(msg){
+    $('#serverResponse').html(msg);
+  });
+
+$(document).on("click", "#changeMap", function() {
+ /*
+ if($('#mapID').val() != ""){
+ var map = $('#mapID').val();
+ $('#serverResponse').html('');
+ socket.emit('change map',map);
+ }else{
+ alert("Please enter a map name!");
+ }
+ $('#mapID').val('');
+ */
+ return false;
+ });
+$(document).on("click", "#restartRound", function() {
+ socket.emit('restart round');
+ return false;
+});
+$(document).on("click", "#getStatus", function() {
+ socket.emit('get status');
+ return false;
+ });
+$(document).on("click", "#getTimeLeft", function() {
+ socket.emit('get time left');
+ return false;
+ });
+$(document).on("click", "#getBannedUsers", function() {
+ socket.emit('get banned users');
+ return false;
+ });
+$(document).on("click", "#getMaps", function() {
+ socket.emit('get maps');
+ return false;
+ });
+$(document).on("click", "#getSourceModPlugins", function() {
+ socket.emit('get sourcemod plugins');
+ return false;
+ });
+$(document).on("click", "#getMetaPlugins", function() {
+ socket.emit('get meta plugins');
+ return false;
+ });
+$(document).on("click", "#getSourcemodVersion", function() {
+ socket.emit('get sourcemod version');
+ return false;
+ });
+$(document).on("click", "#getMetamodVersion", function() {
+ socket.emit('get meta version');
+ return false;
+ });
+
+});
+</script>
+ </head>
+ <body>
+ <div id="container">
+ <div id="content_container">
+ <h3>Hello.</h3>
+ <p>This is a small demo demonstrating the use of a Node.JS backend server working with Socket.IO, Forever, and Express to deliver RCON information from a Source Gold Counter Strike:Global Offensive server.</p>
+ 
+ <pre id = "serverResponse"></pre>
+ 
+ <div class="commandBar">
+ <div class="commands">
+ <p class="pullLeft">Currently using the following server: <span class="serverIP"></span></p>
+ <a href="#" id="getNewServer" class="pullRight">Enter in another server.</a>
+ <div class="buttons">
+ <input type="button" value="Get Status" id="getStatus"/>
+ <input type="button" value="Get Time Left" id="getTimeLeft"/>
+ <input type="button" value="Get Banned Users" id="getBannedUsers"/>
+ <input type="button" value="Get Maps" id="getMaps"/>
+ <input type="button" value="Get SourceMod Plugins" id="getSourceModPlugins"/>
+ <input type="button" value="Get Metamod Plugins" id="getMetaPlugins"/> 
+ <input type="button" value="Get SourceMod Version" id="getSourcemodVersion"/>
+ <input type="button" value="Get Metamod Version" id="getMetamodVersion"/>
+ </div>
+ <div class="extraCommands">
+<!--
+ <input type="button" value="Restart Round" id="restartRound"/>
+ <br/>
+ <label>User Steam ID: </label><input type="text" value="" id="userID"/>
+ <br/>
+ <input type="button" value="Unban User" id="unbanUser"/>
+ <input type="button" value="Ban User" id="banUser"/>
+ <input type="button" value="Kick User" id="kickUser"/>
+ <br/>-->
+ <label>Map Name: </label>
+ <input type="text" value="" id="mapID"/>
+ <input type="button" value="Change Map" id="changeMap"/> 
+ </div>
+ </div>
+ <div class="newServerInfo">
+ <label>Server IP: </label>
+ <input type="text" value="" id="serverIP"/>
+ <label>Server Port: </label>
+ <input type="text" value="" id="serverPort"/>
+ <label>Server RCON Password: </label>
+ <input type="text" value="" id="serverRcon"/>
+ <input type="button" value="Attempt to connect to this server." id="connectServer"/>
+ </div>
+
+ </div>
+
+ </div>
+ </div>
+ </body>
+</html>
